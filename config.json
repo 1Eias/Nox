@@ -1,0 +1,8 @@
+{
+    "youtubeCookie": "",
+    "spotify_api": {
+        "enabled": false,
+        "clientId": "2d2becbcf53a4d778770758c6f9d4a67",
+        "clientSecret": "3047e7fbded34ff887a109cd47877338"
+    }
+}
