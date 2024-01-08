@@ -1,5 +1,7 @@
 {
     "youtubeCookie": "",
+    "welcomeChannelId": "1193688239052177468",
+    "autoRoleId": "1193700035335049306",
     "spotify_api": {
         "enabled": false,
         "clientId": "2d2becbcf53a4d778770758c6f9d4a67",

@@ -1,7 +1,11 @@
 const { Client, Collection, Partials, GatewayIntentBits} = require('discord.js');
+const Discord = require('discord.js');
+const config = require('./config.json');
 
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
+const { createCanvas, loadImage } = require('canvas');
+const { Script } = require('vm');
 
 const client = new Client({
   intents: [
@@ -19,7 +23,8 @@ const client = new Client({
     GatewayIntentBits.DirectMessages,
     GatewayIntentBits.DirectMessageReactions,
     GatewayIntentBits.DirectMessageTyping,
-    GatewayIntentBits.MessageContent
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMembers
   ],
   partials: [
     Partials.Message,
@@ -36,6 +41,37 @@ const client = new Client({
     repliedUser: false
   },
 })
+
+client.on('guildMemberAdd', async member => {
+  const welcomeChannel = member.guild.channels.cache.get(config.welcomeChannelId);
+  const role = member.guild.roles.cache.get(config.autoRoleId);
+
+  
+  if (role) {
+      member.roles.add(role).catch(console.error);
+  } else {
+      console.log('Role not found');
+  }
+
+  const fullUser = await client.users.fetch(member.user.id, { force: true });
+
+  const welcomeEmbed = new Discord.EmbedBuilder()
+      .setColor('#05131f')
+      .setTitle('Welcome to the Server!')
+      .setDescription(`اهلا وسهلا ${member}, Welcome to **${member.guild.name}**! enjoy your stay`)
+      .addFields(
+          { name: 'Username', value: member.user.tag, inline: true },
+          { name: 'You\'re the', value: `${member.guild.memberCount}th member`, inline: true }
+      )
+      .setThumbnail(member.user.displayAvatarURL())
+      .setTimestamp();
+  const bannerUrl = fullUser.bannerURL({ dynamic: true, format: 'png', size: 1024 });
+  if (bannerUrl) {
+      welcomeEmbed.setImage(bannerUrl);
+  }
+
+  welcomeChannel.send({ embeds: [welcomeEmbed] });
+});
 
 client.setMaxListeners(25);
 require('events').defaultMaxListeners = 25;
@@ -58,6 +94,14 @@ rest.put(
   { body: commands },
 ).then(() => console.log('Successfully registered application commands.'))
   .catch(console.error)
+
+client.on('guildMemberAdd', (member) =>{ //when members join server
+  client.channels.cache.get('1193838770752082000').setName(`🌐 Total users - ${member.guild.memberCount}`) // count the total members
+})
+
+client.on('guildMemberRemove', (member) =>{ //when members leave server
+  client.channels.cache.get('1193838770752082000').setName(`🌐 Total users - ${member.guild.memberCount}`) // count the total members
+})
 
 client.login(process.env.token).catch((err) => {
   console.log(err.message)

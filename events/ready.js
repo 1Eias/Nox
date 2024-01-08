@@ -1,4 +1,4 @@
-const { ActivityType } = require('discord.js');
+const { Client, Collection, Partials, GatewayIntentBits, ActivityType } = require('discord.js');
 const Discord = require('discord.js');
 const db = require('quick.db');
 const { prefix } = require('../config.json');
@@ -12,6 +12,8 @@ module.exports = {
   once: true,
   execute(client) {
     try {
+      let guild = client.guilds.cache.get('613504635956887562') // get the server by id
+      client.channels.cache.get('1193838770752082000').setName(`🌐 Total users - ${guild.memberCount}`) // count the total members
       client.pickPresence = async () => {
         const options = [
           {
@@ -31,7 +33,6 @@ module.exports = {
           },
         ];
         const option = Math.floor(Math.random() * options.length);
-    
         client.user.setPresence({
           activities: [
             {
